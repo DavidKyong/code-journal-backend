@@ -1,18 +1,6 @@
 // import { readEntries } from './data';
-import { useEffect } from 'react';
 
-export default function EntryList({ onCreate, onEdit, entries, setEntries }) {
-  // const entries = readEntries();
-  // const [entries, setEntries] = useState([]);
-
-  useEffect(() => {
-    async function getData() {
-      const data = await readData();
-      setEntries(data);
-    }
-    if (!entries) getData();
-  }, [entries, setEntries]);
-
+export default function EntryList({ onCreate, onEdit, entries }) {
   return (
     <div className="container">
       <div className="row">
@@ -66,10 +54,4 @@ function Entry({ entry, onEdit }) {
       </div>
     </li>
   );
-}
-
-async function readData() {
-  const res = await fetch('/api/journal');
-  if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-  return await res.json();
 }

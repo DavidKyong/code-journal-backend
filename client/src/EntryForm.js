@@ -15,12 +15,16 @@ export default function EntryForm({ entry, onSubmit, entries, setEntries }) {
   function handleSubmit(event) {
     event.preventDefault();
     const newEntry = { title, photoUrl, notes };
-    if (entry) {
-      // updateEntry({ ...entry, ...newEntry });
-    } else {
-      addEntry(newEntry);
+    try {
+      if (entry) {
+        addUpdateEntry(entry.entryId, newEntry);
+      } else {
+        addEntry(newEntry);
+      }
+      onSubmit();
+    } catch (err) {
+      console.error(err);
     }
-    onSubmit();
   }
 
   async function addEntry(newEntry) {
@@ -39,8 +43,38 @@ export default function EntryForm({ entry, onSubmit, entries, setEntries }) {
     return await res.json();
   }
 
+  async function addUpdateEntry(entryId, newEntry) {
+    const oldEntry = entries.find((entry) => entry.entryId === entryId);
+    const updatedEntry = { ...oldEntry, ...newEntry };
+    const updatedTodo = await updateEntry(updatedEntry);
+
+    setEntries(
+      entries.map((entry) => (entry.entryId === entryId ? updatedTodo : entry))
+    );
+  }
+
+  async function updateEntry(entry) {
+    const req = {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    };
+    const res = await fetch(`/api/journal/${entry.entryId}`, req);
+    if (!res.ok) throw new Error(`fetch Error ${res.status}`);
+    return await res.json();
+  }
+
+  async function removeEntry(entryId) {
+    const req = {
+      method: 'DELETE',
+    };
+    const res = await fetch(`/api/journal/${entryId}`, req);
+    if (!res.ok) throw new Error(`fetch Error ${res.status}`);
+    setEntries((prev) => prev.filter((entry) => entry.entryId !== entryId));
+  }
+
   function handleDelete() {
-    // removeEntry(entry.entryId);
+    removeEntry(entry.entryId);
     onSubmit();
   }
 
