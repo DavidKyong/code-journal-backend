@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { addEntry, removeEntry, updateEntry } from './data';
+// import { addEntry, removeEntry, updateEntry } from './data';
 
 /**
  * Form that adds or edits an entry.
  * If `entry` is `null`, adds an entry.
  * If `entry` is defined, edits that entry.
  */
-export default function EntryForm({ entry, onSubmit }) {
+export default function EntryForm({ entry, onSubmit, entries, setEntries }) {
   const [title, setTitle] = useState(entry?.title ?? '');
   const [photoUrl, setPhotoUrl] = useState(entry?.photoUrl ?? '');
   const [notes, setNotes] = useState(entry?.notes ?? '');
@@ -16,15 +16,31 @@ export default function EntryForm({ entry, onSubmit }) {
     event.preventDefault();
     const newEntry = { title, photoUrl, notes };
     if (entry) {
-      updateEntry({ ...entry, ...newEntry });
+      // updateEntry({ ...entry, ...newEntry });
     } else {
       addEntry(newEntry);
     }
     onSubmit();
   }
 
+  async function addEntry(newEntry) {
+    const newTask = await createEntry(newEntry);
+    setEntries((prev) => prev.concat([newTask]));
+  }
+
+  async function createEntry(entry) {
+    const req = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    };
+    const res = await fetch('/api/journal', req);
+    if (!res.ok) throw new Error(`fetch Error ${res.status}`);
+    return await res.json();
+  }
+
   function handleDelete() {
-    removeEntry(entry.entryId);
+    // removeEntry(entry.entryId);
     onSubmit();
   }
 

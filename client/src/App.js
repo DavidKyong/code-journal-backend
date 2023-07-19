@@ -11,17 +11,25 @@ export default function App() {
    * defined - the entry being edited
    */
   const [editing, setEditing] = useState();
+  const [entries, setEntries] = useState([]);
 
   return (
     <>
       <NavBar onEntries={() => setEditing(undefined)} />
       {editing !== undefined && (
-        <EntryForm entry={editing} onSubmit={() => setEditing(undefined)} />
+        <EntryForm
+          entry={editing}
+          onSubmit={() => setEditing(undefined)}
+          entries={entries}
+          setEntries={setEntries}
+        />
       )}
       {editing === undefined && (
         <EntryList
           onCreate={() => setEditing(null)}
           onEdit={(entry) => setEditing(entry)}
+          entries={entries}
+          setEntries={setEntries}
         />
       )}
     </>
