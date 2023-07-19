@@ -1,7 +1,6 @@
-import { readEntries } from './data';
+// import { readEntries } from './data';
 
-export default function EntryList({ onCreate, onEdit }) {
-  const entries = readEntries();
+export default function EntryList({ onCreate, onEdit, entries }) {
   return (
     <div className="container">
       <div className="row">
